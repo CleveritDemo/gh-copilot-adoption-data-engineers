@@ -35,7 +35,6 @@ The objective of this lab is to:
 - VS Code version with Jupyter and GitHub Copilot Extensions enabled.
 - Apache Spark setup.
 - SQL Database (PostgreSQL, MySQL, etc.) installed.
-<<<<<<< HEAD
 - SQLAlchemy and other necessary Python packages installed.
 
 ## RDD Operations
@@ -312,6 +311,3 @@ WHERE s.salary > (SELECT AVG(salary) FROM salaries)
 result = spark.sql(query)
 result.show()
 ```
-=======
-- SQLAlchemy and other necessary Python packages installed.
->>>>>>> 92fdfc7b1e8057aacf180859b953e8f2cd4bc410
