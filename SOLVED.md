@@ -188,3 +188,89 @@ df.join(df2, on='category', how='inner').show()
 # Add a new calculated column
 df.withColumn('price_after_tax', df['price'] * 1.1).show()
 ```
+
+## Spark SQL
+
+### Load Data into a DataFrame
+```python
+# Load the synthetic data into a DataFrame
+data_file = '../data/persons.csv'
+persons_df = spark.read.csv(data_file, header=True, inferSchema=True)
+
+# Show the schema of the DataFrame
+persons_df.printSchema()
+
+# Show the first 5 rows of the DataFrame
+persons_df.show(5)
+```
+
+### Register the DataFrame as a Temporary Table
+```python
+# Register the DataFrame as a Temporary Table
+persons_df.createOrReplaceTempView('persons')
+```
+
+### Perform SQL-like Queries
+```python
+# Select all rows where age is greater than 25
+query = 'SELECT * FROM persons WHERE age > 25'
+persons_df_greater_than_25 = spark.sql(query)
+persons_df_greater_than_25.show()
+
+# Compute the average salary of persons
+query = 'SELECT AVG(salary) AS avg_salary FROM persons'
+avg_salary = spark.sql(query)
+avg_salary.show()
+```
+
+### Managing temporary views
+```python
+# Check if a temporary view exists
+if spark.catalog._jcatalog.tableExists('persons'):
+    print('The temporary view persons exists')
+
+# Drop the temporary view
+spark.catalog.dropTempView('persons')
+
+# Check if a temporary view exists
+if spark.catalog._jcatalog.tableExists('persons'):
+    print('The temporary view persons exists')
+```
+
+### Sub Queries
+```python
+# Create two DataFrames
+# The first DataFrame contains employee data with columns: id, name
+# The second DataFrame contains salary data with columns: id, salary, department
+data1 = [(1, 'John'), (2, 'Jane'), (3, 'Alice')]
+data2 = [(1, 1000, 'HR'), (2, 1500, 'Engineering'), (3, 1200, 'Marketing')]
+columns1 = ['id', 'name']
+columns2 = ['id', 'salary', 'department']
+df1 = spark.createDataFrame(data1, columns1)
+df2 = spark.createDataFrame(data2, columns2)
+
+# Show the first DataFrame
+df1.show()
+
+# Show the second DataFrame
+df2.show()
+```
+
+```python
+# Register as temporary views
+df1.createOrReplaceTempView('employees')
+df2.createOrReplaceTempView('salaries')
+```
+
+```python
+# Subquery to find employees with salaries above average
+query = '''
+SELECT e.name, s.salary
+FROM employees e
+JOIN salaries s
+ON e.id = s.id
+WHERE s.salary > (SELECT AVG(salary) FROM salaries)
+'''
+result = spark.sql(query)
+result.show()
+```
